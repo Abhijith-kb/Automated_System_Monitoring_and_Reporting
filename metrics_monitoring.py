@@ -93,8 +93,18 @@ def execute_query(query, params=None, convert_timestamps=False):
     
     return rows
 
-# 1. Get CPU, Battery, and RAM % (Latest 50 entries, ordered ASC)
-def get_percent_data_from_db():
+# 1. Get CPU, Battery, and RAM % (Latest 1 day, ordered ASC)
+def get_percent_data_1day_from_db():
+    query = """
+        SELECT timestamp, cpu_percent, bat_per, sys_mem_perc
+        FROM system_metrics
+        WHERE timestamp >= datetime('now', 'localtime', '-5 hour')
+        ORDER BY timestamp;
+    """
+    return execute_query(query, convert_timestamps=True)
+
+# 2. Get CPU, Battery, and RAM % (Latest 1 week, ordered ASC)
+def get_percent_data_1week_from_db():
     query = """
         SELECT timestamp, cpu_percent, bat_per, sys_mem_perc
         FROM (
@@ -102,33 +112,10 @@ def get_percent_data_from_db():
             FROM system_metrics
             ORDER BY timestamp DESC
             LIMIT 50
-        ) AS latest_50
-        ORDER BY timestamp;
+        )
+        ORDER BY timestamp ASC;
     """
     return execute_query(query, convert_timestamps=False)
-
-# 2. Get latest CPU time breakdown
-def get_cpu_time_distribution():
-    query = """
-        SELECT cpu_times_system, cpu_times_user, cpu_times_idle
-        FROM system_metrics
-        ORDER BY timestamp DESC
-        LIMIT 1
-    """
-    row = execute_query(query)
-    if row:
-        system, user, idle = row[0]
-        return {
-            "System Mode(Kernel & Drivers)": system,
-            "User Mode": user,
-            "Idle Mode": idle
-        }
-    else:
-        return {
-            "System Mode(Kernel & Drivers)": 0,
-            "User Mode": 0,
-            "Idle Mode": 0
-        }
 
 # 3. Get RAM stats (Latest 50 entries)
 def get_ram_data_from_db():

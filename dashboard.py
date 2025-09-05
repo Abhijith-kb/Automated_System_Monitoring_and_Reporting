@@ -3,7 +3,7 @@ from PyQt5.QtWidgets import QApplication, QMainWindow, QVBoxLayout, QGridLayout,
 from PyQt5.QtCore import QTimer
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.figure import Figure
-from metrics_monitoring import get_percent_data_from_db, get_cpu_time_distribution, get_ram_data_from_db, get_cpu_time_trend  # Import your DB function
+from metrics_monitoring import get_percent_data_1day_from_db, get_percent_data_1week_from_db, get_ram_data_from_db, get_cpu_time_trend  # Import your DB function
 # from PyQt5.QtWidgets import QSizePolicy
 import matplotlib.dates as mdates
 import matplotlib.ticker as ticker
@@ -24,7 +24,7 @@ class MainWindow(QMainWindow):
 
         # --- Create all 4 canvas blocks ---
         self.canvas_line_chart = MplCanvas(self, dpi=140)
-        self.canvas_doughnut = MplCanvas(self, dpi=140)
+        self.canvas_weekly_line_chart = MplCanvas(self, dpi=140)
         self.canvas_cpu_area_chart = MplCanvas(self, dpi=140)
         self.canvas_area_chart = MplCanvas(self, dpi=140)
 
@@ -34,8 +34,8 @@ class MainWindow(QMainWindow):
         # --- Layout setup ---
         tabs = QTabWidget()           # Create the QTabWidget
         # Add canvases (charts) as individual tabs
-        tabs.addTab(self.canvas_line_chart, "System metrics Line Chart")
-        tabs.addTab(self.canvas_doughnut, "CPU Time Distribution")
+        tabs.addTab(self.canvas_line_chart, "System metrics Line Chart (1 Day)")
+        tabs.addTab(self.canvas_weekly_line_chart, "System Metrics Line Chart (1 Week)")
         tabs.addTab(self.canvas_cpu_area_chart, "CPU Time Area Chart")
         tabs.addTab(self.canvas_area_chart, "RAM Usage Area Chart")
 
@@ -56,12 +56,12 @@ class MainWindow(QMainWindow):
 
     def update_charts(self):
         self.update_line_chart()
-        self.update_doughnut_chart()
+        self.update_weekly_line_chart()
         self.update_cpu_area_chart()
         self.update_area_chart()
 
     def update_line_chart(self):
-        data = get_percent_data_from_db()
+        data = get_percent_data_1day_from_db()
         if not data:
             return
 
@@ -91,45 +91,36 @@ class MainWindow(QMainWindow):
         # self.canvas_line_chart.fig.tight_layout()
         self.canvas_line_chart.draw()
 
-    def update_doughnut_chart(self):
-        cpu_data = get_cpu_time_distribution()
-        labels = list(cpu_data.keys())
-        sizes_sec = list(cpu_data.values())
-        sizes_min = [s / 60 for s in sizes_sec]  # ✅ Convert to minutes
-        total = sum(sizes_min)
-        colors = ['#66b3ff', '#ff9999', '#99ff99']  # Customize as needed
+    def update_weekly_line_chart(self):
+        data = get_percent_data_1week_from_db()
+        if not data:
+            return
 
-        ax = self.canvas_doughnut.ax
+        timestamps = [row[0] for row in data]
+        cpu_percent = [row[1] for row in data]
+        battery_percent = [row[2] for row in data]
+        ram_percent = [row[3] for row in data]
+
+        ax = self.canvas_weekly_line_chart.ax  # ✅ Use the correct canvas here
         ax.clear()
 
-        wedges, _ = ax.pie(
-            sizes_min,
-            labels=None,
-            colors=colors,
-            startangle=90,
-            autopct=None,
-            wedgeprops={'width': 0.4}
-        )
+        ax.plot(timestamps, cpu_percent, marker='o', color='blue', label='CPU %')
+        ax.plot(timestamps, battery_percent, marker='x', color='green', label='Battery %')
+        ax.plot(timestamps, ram_percent, marker='s', color='red', label='RAM %')
 
-        ax.set_title("CPU Time Distribution (User / Kernel / Idle) in minutes")
-        ax.axis('equal')
+        ax.set_title("System Metrics Over Time")
+        ax.set_xlabel("Timestamp")
+        ax.set_ylabel("Percentage")
+        ax.tick_params(axis='x', rotation=45)
 
-        # Create custom legend labels: "Label: XX.X% (Value)"
-        legend_labels = [
-            f"{label}: {size / total * 100:.1f}% ({size:.1f} min)"
-            for label, size in zip(labels, sizes_min)
-        ]
+        # Fix the legend to top-right inside the plot
+        # ax.legend(loc='upper right', frameon=True)
 
-        # Add the legend with the same colors
-        ax.legend(
-            wedges,
-            legend_labels,
-            title="Legend",
-            loc="center left",
-            bbox_to_anchor=(1, 0, 0.5, 1)
-        )
+        # OR: To place legend outside the plot, use this instead:
+        ax.legend(loc='center left', bbox_to_anchor=(1, 0.5))
 
-        self.canvas_doughnut.draw()
+        # self.canvas_line_chart.fig.tight_layout()
+        self.canvas_weekly_line_chart.draw()
     
     def update_cpu_area_chart(self):
         data = get_cpu_time_trend()
