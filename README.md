@@ -65,6 +65,8 @@ cpu_times_idle, sys_mem_total, sys_mem_used, sys_mem_avail,
 sys_mem_perc, bat_per, charger_plug, time_left
 ```
 
+<img width="1326" height="330" alt="Screenshot 2025-09-04 110027" src="https://github.com/user-attachments/assets/640e8ddd-76ea-4aa8-8dc5-c51a2cf8c3a6" />
+
 ---
 
 ### 3. Email Alert System
@@ -77,8 +79,12 @@ Alerts are triggered when:
 
 Uses `smtplib` and `email.message` for sending notifications.
 
-**Example alert:**  
-> ⚠️ CPU usage reached 93.6% at 11:08 AM. RAM usage at 87.3%. Battery at 42%. Charging: No
+**Example alert:** 
+Below is an example of the email alert notification you will receive:
+
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/70d54086-fca3-4054-b694-1fbee2348e9c" alt="ETL Flow" width="600" />
+</p>
 
 ---
 
@@ -86,9 +92,15 @@ Uses `smtplib` and `email.message` for sending notifications.
 
 - Built using `PyQt5` with embedded `Matplotlib` charts  
 - Automatically refreshes every minute to display latest metrics  
-- Supports:
-  - Line charts (hourly and daily)
-  - Stacked area charts (CPU time, RAM usage)
+- Charts:
+  - #### System Metrics Line Chart (Hourly)
+  - #### System Metrics Line Chart (Daily)
+  - #### CPU Time Stacked Area Chart (Idle, User, Kernel)
+  - #### RAM Usage Stacked Area Chart
+
+<img width="1920" height="1020" alt="Screenshot 2025-09-04 123143" src="https://github.com/user-attachments/assets/58031b93-20bb-4b70-b4de-bef414c9292c" />  
+
+<img width="1920" height="1020" alt="Screenshot 2025-09-04 143359" src="https://github.com/user-attachments/assets/6f963a9e-8a2a-49a7-9bbd-2972727147ec" />
 
 ---
 
