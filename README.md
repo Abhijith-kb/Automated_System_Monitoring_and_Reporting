@@ -83,7 +83,7 @@ Uses `smtplib` and `email.message` for sending notifications.
 Below is an example of the email alert notification you will receive:
 
 <p align="center">
-  <img src="https://github.com/user-attachments/assets/70d54086-fca3-4054-b694-1fbee2348e9c" alt="ETL Flow" width="600" />
+  <img src="https://github.com/user-attachments/assets/70d54086-fca3-4054-b694-1fbee2348e9c" alt="ETL Flow" width="400" />
 </p>
 
 ---
@@ -144,7 +144,9 @@ Below is an example of the email alert notification you will receive:
 
 ```
 
-<img width="404" height="403" alt="flowcharts_project" src="https://github.com/user-attachments/assets/c09a7530-a0a1-446e-a9b5-5f0cdd58cac4" />
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/c09a7530-a0a1-446e-a9b5-5f0cdd58cac4" alt="ETL Flow" width="400" />
+</p>
 
 ---
 
