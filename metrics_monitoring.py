@@ -101,7 +101,7 @@ def get_percent_data_1day_from_db():
         WHERE timestamp >= datetime('now', 'localtime', '-5 hour')
         ORDER BY timestamp;
     """
-    return execute_query(query, convert_timestamps=True)
+    return execute_query(query, convert_timestamps=False)
 
 # 2. Get CPU, Battery, and RAM % (Latest 1 week, ordered ASC)
 def get_percent_data_1week_from_db():
